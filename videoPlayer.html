@@ -31,7 +31,7 @@
 		.controls {
 			width: 700px;
 			height: 40px;
-			background-color: rgba(0, 0, 0, 0.2);
+			background-color: rgba(255, 255, 255, 0.2);
 			position: absolute;
 			bottom: 10px;
 			left: 50px;
@@ -58,7 +58,7 @@
 		.time {
 			position: absolute;
 			left: auto;
-			right: 35px;
+			right: 80px;
 			top: 10px;
 			color: #fff;
 		}
@@ -73,6 +73,54 @@
 			left: 10px;
 			top: 10px;
 		}
+		.volume {
+			position: absolute;
+			left: auto;
+			right: 43px;
+			top: -110px;
+			background-color: rgba(255, 255, 255, 0.2);
+			width: 20px;
+			height: 110px;
+			display: none;
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+		}
+		.volumebtn {
+			position: absolute;
+			/*background-color: white;*/
+			width: 30px;
+			height: 30px;
+			left: 633px;
+			top: 5px;
+			z-index: 1;
+
+		}
+		.volumebtn>a {
+			display: block;
+			position: absolute;
+			left: 5px;
+			top: 5px;
+		}
+
+		.volume-ctrl {
+			width: 10px;
+			height: 110px;
+			position: absolute;
+			left: 5px;
+			top: 5px;
+			background-color: rgba(255, 255, 255, 0.2);
+			border-radius: 4px;
+			overflow: hidden;
+			cursor: pointer;
+		}
+		.curr-volume {
+			width: 100%;
+			height: 50%;
+			position: absolute;
+			bottom: 0;
+			border-radius: 4px;
+			background-color: #fff;
+		}
 		.fullsrc {
 			position: absolute;
 			left: auto;
@@ -80,7 +128,7 @@
 			top: 10px;
 		}
 
-		.hide {
+		.hideCtrP {
 			transition: transform 2s;
 			transform: translate(0, 100px);
 		}
@@ -99,19 +147,32 @@
 			<div class="controls">
 				<!-- 播放暂停键 -->
 				<!-- icon-play是字体图标css写好的类 -->
-				<a href="#" class="switch icon-play"></a>
+				<a href="#" class="switch icon-play" draggable="false"></a>
 				<!-- 进度条 -->
 				<div class="progress">
 					<div class="curr-progress"></div>
 				</div>
 				<!-- 时间显示 -->
-				<div class="time">
-					<span class="curr-time">00:00:00</span> /
-					<span class="total-time">00:00:00</span>
+				<div class="time" draggable="false">
+					<span class="curr-time">00:00</span> /
+					<span class="total-time">00:00</span>
 				</div>
+				<!-- 音量按钮 -->
+				<!-- icon-volume-up是字体图标css写好的类 -->
+				<div class="volumebtn">
+					<a href="#" class="icon-volume-up" draggable="false"></a>
+				</div>
+				<div class="volume">	
+					<div class="volume-ctrl">
+						<div class="curr-volume"></div>
+					</div>	
+				</div>
+				
 				<!-- 全屏按钮 -->
 				<!-- icon-resize-full是字体图标css写好的类 -->
-				<a href="#" class="fullsrc icon-resize-full"></a>
+				<a href="#" class="fullsrc icon-resize-full" draggable="false"></a>
+				
+
 			</div>
 		</div>
 		
@@ -121,7 +182,8 @@
 		var video = document.querySelector('video');
 		// 找到所有的a的父元素，这里只有div，然后找第三个孩子
 		var playbtn = document.querySelector("a:nth-child(1)");
-		var fullsrcbtn = document.querySelectorAll("a")[1];
+		var volumebtn = document.querySelector(".volumebtn");
+		var fullsrcbtn = document.querySelector(".fullsrc");
 
 		var currProg = document.querySelector('.curr-progress');
 		var currTime = document.querySelector('.curr-time');
@@ -143,39 +205,42 @@
 
 		// 视频加载完成时的事件
 		video.oncanplay = function(){
-			console.log('ok');
 			// 获取视频总时长
 			var t = video.duration;
-			console.log(t);
+			// console.log(t);
 			// 算出时分秒
-			var h = Math.floor(t/3600);
-			var m = Math.floor(t%3600/60);
+			// var h = Math.floor(t/3600);
+			// var m = Math.floor(t%3600/60);
+			var m = Math.floor(t/60);
 			var s = Math.floor(t%60);
 
 			// javascript可以随意更改数据类型
-			h = h>=10?h:"0"+h;
+			// h = h>=10?h:"0"+h;
 			m = m>=10?m:"0"+m;
 			s = s>=10?s:"0"+s;
 
-			console.log(h+" "+m+" "+s);
+			// console.log(h+" "+m+" "+s);
 
-			totalTime.innerHTML = h+":"+m+":"+s;
+			// totalTime.innerHTML = h+":"+m+":"+s;
+			totalTime.innerHTML = m+":"+s;
 		}
 
 		video.ontimeupdate = function(){
 			var cT = video.currentTime;
-			console.log(cT);
+			// console.log(cT);
+
 			// 算出时分秒
-			var h = Math.floor(cT/3600);
-			var m = Math.floor(cT%3600/60);
+			// var h = Math.floor(cT/3600);
+			// var m = Math.floor(cT%3600/60);
+			var m = Math.floor(cT/60);
 			var s = Math.floor(cT%60);
 
-			// javascript可以随意更改数据类型
-			h = h>=10?h:"0"+h;
+			// h = h>=10?h:"0"+h;
 			m = m>=10?m:"0"+m;
 			s = s>=10?s:"0"+s;
 
-			currTime.innerHTML = h+":"+m+":"+s;
+			// currTime.innerHTML = h+":"+m+":"+s;
+			currTime.innerHTML = m+":"+s;
 
 			// 更改进度条长度
 			var t = video.duration;
@@ -191,12 +256,52 @@
 
 		var controlPanel = document.querySelector(".controls");
 		var player = document.querySelector(".player");
+		
 		// 鼠标离开时隐藏进度条
 		player.onmouseover = function () {
-			controlPanel.classList.remove("hide");
+			controlPanel.classList.remove("hideCtrP");
 		}
 		player.onmouseleave = function () {
-			controlPanel.classList.add("hide");
+			controlPanel.classList.add("hideCtrP");
+		}
+
+		var volume = document.querySelector(".volume");
+		var currVolume = document.querySelector(".curr-volume");
+
+		// 音量调节功能
+		volumebtn.onmouseover = function () {
+			volume.style.display = "block";
+
+			
+		}
+		// 静音功能
+		volumebtn.onclick = function () {
+
+			if(video.muted) {
+				video.muted = false;
+				// 切换图标
+				this.querySelector("a").classList.remove("icon-volume-off");
+				this.querySelector("a").classList.add("icon-volume-up");
+			}
+			else {
+				video.muted = true;
+				this.querySelector("a").classList.remove("icon-volume-up");
+				this.querySelector("a").classList.add("icon-volume-off");
+			}
+			
+		}
+		// 鼠标离开声音按钮隐藏音量调节
+		volumebtn.onmouseleave = function () {
+			volume.style.display = "none";
+		}
+		// 鼠标进入volume保持显示
+		volume.onmouseover = function () {
+			this.style.display = "block";
+			
+		}
+		// 鼠标离开volume隐藏音量调节
+		volume.onmouseleave = function () {
+			this.style.display = "none";
 		}
 
 	</script>

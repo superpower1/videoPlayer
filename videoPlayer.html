@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<!-- 引入字体图标写好的css -->
+	<link rel='stylesheet' href="css/font-awesome.min.css">
+	<style>
+		.player {
+			width: 800px;
+			height: 400px;
+			margin: 10px auto;
+			background-color: black;
+			/*background: url("img/bilibili.gif") center no-repeat;*/
+			background-size: auto 100%;
+			position: relative;
+			overflow: hidden;
+		}
+		.player video {
+			height: 100%;
+			display: block;
+			margin: 0 auto;
+			/*display: none;*/
+
+		}
+
+		video::-webkit-media-controls {
+			display:none !important;
+		}
+
+		.controls {
+			width: 700px;
+			height: 40px;
+			background-color: rgba(0, 0, 0, 0.2);
+			position: absolute;
+			bottom: 10px;
+			left: 50px;
+			border-radius: 10px;
+		}
+
+		.progress {
+			width: 475px;
+			height: 20px;
+			position: absolute;
+			background-color: rgba(255, 255, 255, 0.5);
+			left: 35px;
+			top: 10px;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+
+		.curr-progress {
+			width: 0;
+			height: 100%;
+			background-color: #fff;
+		}
+
+		.time {
+			position: absolute;
+			left: auto;
+			right: 35px;
+			top: 10px;
+			color: #fff;
+		}
+
+		a {
+			color: #ccc;
+			font-size: 20px;
+		}
+
+		.switch {
+			position: absolute;
+			left: 10px;
+			top: 10px;
+		}
+		.fullsrc {
+			position: absolute;
+			left: auto;
+			right: 10px;
+			top: 10px;
+		}
+
+		.hide {
+			transition: transform 2s;
+			transform: translate(0, 100px);
+		}
+	</style>
+
+	
+</head>
+<body>
+	<!-- html5表示多媒体的标签figure（实质上和div一样，只是有语义） -->
+	<figure>
+		<figcaption>视频案例</figcaption>
+		<div class="player">
+			<!-- <img src="img/bilibili.gif" alt=""> -->
+			<video id="myVideo" src="video/movie.mp4"></video>
+			<!-- 控制条 -->
+			<div class="controls">
+				<!-- 播放暂停键 -->
+				<!-- icon-play是字体图标css写好的类 -->
+				<a href="#" class="switch icon-play"></a>
+				<!-- 进度条 -->
+				<div class="progress">
+					<div class="curr-progress"></div>
+				</div>
+				<!-- 时间显示 -->
+				<div class="time">
+					<span class="curr-time">00:00:00</span> /
+					<span class="total-time">00:00:00</span>
+				</div>
+				<!-- 全屏按钮 -->
+				<!-- icon-resize-full是字体图标css写好的类 -->
+				<a href="#" class="fullsrc icon-resize-full"></a>
+			</div>
+		</div>
+		
+	</figure>
+	
+	<script>
+		var video = document.querySelector('video');
+		// 找到所有的a的父元素，这里只有div，然后找第三个孩子
+		var playbtn = document.querySelector("a:nth-child(1)");
+		var fullsrcbtn = document.querySelectorAll("a")[1];
+
+		var currProg = document.querySelector('.curr-progress');
+		var currTime = document.querySelector('.curr-time');
+		var totalTime = document.querySelector('.total-time');
+
+		playbtn.onclick = function () {
+			if(video.paused) {
+				video.play();
+				// 切换图标
+				this.classList.remove('icon-play');
+				this.classList.add('icon-pause');
+			}
+			else {
+				video.pause();
+				this.classList.remove('icon-pause');
+				this.classList.add('icon-play');
+			}
+		}
+
+		// 视频加载完成时的事件
+		video.oncanplay = function(){
+			console.log('ok');
+			// 获取视频总时长
+			var t = video.duration;
+			console.log(t);
+			// 算出时分秒
+			var h = Math.floor(t/3600);
+			var m = Math.floor(t%3600/60);
+			var s = Math.floor(t%60);
+
+			// javascript可以随意更改数据类型
+			h = h>=10?h:"0"+h;
+			m = m>=10?m:"0"+m;
+			s = s>=10?s:"0"+s;
+
+			console.log(h+" "+m+" "+s);
+
+			totalTime.innerHTML = h+":"+m+":"+s;
+		}
+
+		video.ontimeupdate = function(){
+			var cT = video.currentTime;
+			console.log(cT);
+			// 算出时分秒
+			var h = Math.floor(cT/3600);
+			var m = Math.floor(cT%3600/60);
+			var s = Math.floor(cT%60);
+
+			// javascript可以随意更改数据类型
+			h = h>=10?h:"0"+h;
+			m = m>=10?m:"0"+m;
+			s = s>=10?s:"0"+s;
+
+			currTime.innerHTML = h+":"+m+":"+s;
+
+			// 更改进度条长度
+			var t = video.duration;
+			var value = cT/t;
+			currProg.style.width = value*100+"%";
+		};
+
+		// 全屏
+		fullsrcbtn.onclick = function () {
+			// html5的全屏默认显示自带的控制面板
+			video.webkitRequestFullScreen();
+		}
+
+		var controlPanel = document.querySelector(".controls");
+		var player = document.querySelector(".player");
+		// 鼠标离开时隐藏进度条
+		player.onmouseover = function () {
+			controlPanel.classList.remove("hide");
+		}
+		player.onmouseleave = function () {
+			controlPanel.classList.add("hide");
+		}
+
+	</script>
+</body>
+</html>

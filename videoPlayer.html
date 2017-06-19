@@ -11,8 +11,8 @@
 			height: 400px;
 			margin: 10px auto;
 			background-color: black;
-			/*background: url("img/bilibili.gif") center no-repeat;*/
-			background-size: auto 100%;
+			background: url("img/bilibili.gif") center no-repeat;
+			/*background-size: auto 100%;*/
 			position: relative;
 			overflow: hidden;
 		}
@@ -20,7 +20,7 @@
 			height: 100%;
 			display: block;
 			margin: 0 auto;
-			/*display: none;*/
+			display: none;
 
 		}
 
@@ -180,7 +180,7 @@
 	
 	<script>
 		var video = document.querySelector('video');
-		// 找到所有的a的父元素，这里只有div，然后找第三个孩子
+		// 找到所有的a的父元素，这里只有div，然后找第一个孩子
 		var playbtn = document.querySelector("a:nth-child(1)");
 		var volumebtn = document.querySelector(".volumebtn");
 		var fullsrcbtn = document.querySelector(".fullsrc");
@@ -189,22 +189,47 @@
 		var currTime = document.querySelector('.curr-time');
 		var totalTime = document.querySelector('.total-time');
 
-		playbtn.onclick = function () {
+		// 封装播放/暂停方法
+		function playSwitch () {
 			if(video.paused) {
 				video.play();
 				// 切换图标
-				this.classList.remove('icon-play');
-				this.classList.add('icon-pause');
+				playbtn.classList.remove('icon-play');
+				playbtn.classList.add('icon-pause');
 			}
 			else {
 				video.pause();
-				this.classList.remove('icon-pause');
-				this.classList.add('icon-play');
+				playbtn.classList.remove('icon-pause');
+				playbtn.classList.add('icon-play');
+			}
+		}
+		// 点解按键暂停
+		playbtn.onclick = function () {
+			playSwitch ();
+		}
+		// 点击video暂停
+		video.onclick = function () {
+			playSwitch ();
+		}
+		// 用来记录视频是否获取焦点，点击了视频获取焦点，点击视频以外的区域失去焦点
+		var videoOnfocus = false;
+		document.onclick = function(event) {
+			var e = event.target;
+			if(e === video) videoOnfocus = true;
+			else videoOnfocus = false;
+		}
+		// 如果视频获取了焦点则按下空格键可以暂停
+		document.onkeyup = function(event) {	
+			if(event.keyCode === 32 && videoOnfocus) {
+				playSwitch ();
 			}
 		}
 
 		// 视频加载完成时的事件
 		video.oncanplay = function(){
+			// 显示视频
+			video.style.display = 'block';
+
 			// 获取视频总时长
 			var t = video.duration;
 			// console.log(t);
@@ -302,6 +327,7 @@
 		volume.onmouseleave = function () {
 			this.style.display = "none";
 		}
+
 
 	</script>
 </body>

@@ -115,7 +115,7 @@
 		}
 		.curr-volume {
 			width: 100%;
-			height: 50%;
+			height: 100%;
 			position: absolute;
 			bottom: 0;
 			border-radius: 4px;
@@ -177,14 +177,16 @@
 		</div>
 		
 	</figure>
-	
+	<script src="js/jquery-1.11.1.js"></script>
 	<script>
+		var player = document.querySelector('player');
 		var video = document.querySelector('video');
 		// 找到所有的a的父元素，这里只有div，然后找第一个孩子
 		var playbtn = document.querySelector("a:nth-child(1)");
 		var volumebtn = document.querySelector(".volumebtn");
 		var fullsrcbtn = document.querySelector(".fullsrc");
 
+		var progress = document.querySelector('.progress');
 		var currProg = document.querySelector('.curr-progress');
 		var currTime = document.querySelector('.curr-time');
 		var totalTime = document.querySelector('.total-time');
@@ -211,13 +213,14 @@
 		video.onclick = function () {
 			playSwitch ();
 		}
-		// 用来记录视频是否获取焦点，点击了视频获取焦点，点击视频以外的区域失去焦点
-		var videoOnfocus = false;
-		document.onclick = function(event) {
-			var e = event.target;
-			if(e === video) videoOnfocus = true;
-			else videoOnfocus = false;
-		}
+		// 用来记录视频是否获取焦点，点击视频获取焦点，点击视频以外的区域失去焦点
+		// var videoOnfocus = false;
+		// document.onclick = function(event) {
+		// 	var e = event.target;
+		// 	console.log(e);
+		// 	if(e === player) videoOnfocus = true;
+		// 	else videoOnfocus = false;
+		// }
 		// 如果视频获取了焦点则按下空格键可以暂停
 		document.onkeyup = function(event) {	
 			if(event.keyCode === 32 && videoOnfocus) {
@@ -273,6 +276,20 @@
 			currProg.style.width = value*100+"%";
 		};
 
+		progress.onclick = function (event) {
+			event = event || window.event;
+			var pageX = event.pageX || scroll().left + event.clientX;
+			//记录点击的时候鼠标相对于进度条的位置
+			var origX = pageX - $(this).offset().left;
+
+			var ratio = origX/this.offsetWidth;
+
+			currProg.style.width = ratio*100+"%";
+	
+			video.currentTime = video.duration * ratio;
+
+		}
+
 		// 全屏
 		fullsrcbtn.onclick = function () {
 			video.webkitRequestFullScreen();
@@ -290,9 +307,10 @@
 		}
 
 		var volume = document.querySelector(".volume");
+		var volumeCtrl = document.querySelector(".volume-ctrl");
 		var currVolume = document.querySelector(".curr-volume");
 
-		// 音量调节功能
+		// 鼠标放在喇叭键上显示音量控制
 		volumebtn.onmouseover = function () {
 			volume.style.display = "block";
 
@@ -326,6 +344,19 @@
 		// 鼠标离开volume隐藏音量调节
 		volume.onmouseleave = function () {
 			this.style.display = "none";
+		}
+		// 音量调节功能
+		volumeCtrl.onclick = function () {
+			event = event || window.event;
+			var pageY = event.pageY || scroll().top + event.clientY;
+			//记录点击的时候鼠标相对于音量条的位置
+			var origY = pageY - $(this).offset().top;
+
+			var ratio = (this.offsetHeight - origY)/this.offsetHeight;
+
+			currVolume.style.height = ratio*100+"%";
+			// console.log(ratio);
+			video.volume = ratio;
 		}
 
 

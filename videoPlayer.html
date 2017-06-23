@@ -132,6 +132,27 @@
 			transition: transform 2s;
 			transform: translate(0, 100px);
 		}
+
+		.danmaku {
+			width: 700px;
+			margin: 0 auto;
+			background-color: lightgrey;
+		}
+		.danmaku input {
+			width: 90%;
+		}
+		.danmaku button {
+			width: 60px;
+		}
+		.comments {
+			width: 800px;
+			height: 100px;
+			margin: 0 auto;
+			background-color: pink;
+		}
+		.commTxt {
+			background-color: lightgrey;
+		}
 	</style>
 
 	
@@ -174,9 +195,16 @@
 				
 
 			</div>
+			
 		</div>
-		
+		<div class="danmaku">
+			<input type="text">
+			<button>send</button>
+		</div>
 	</figure>
+
+	<div class="comments"></div>
+
 	<script src="js/jquery-1.11.1.js"></script>
 	<script>
 		var player = document.querySelector('player');
@@ -214,13 +242,13 @@
 			playSwitch ();
 		}
 		// 用来记录视频是否获取焦点，点击视频获取焦点，点击视频以外的区域失去焦点
-		// var videoOnfocus = false;
-		// document.onclick = function(event) {
-		// 	var e = event.target;
-		// 	console.log(e);
-		// 	if(e === player) videoOnfocus = true;
-		// 	else videoOnfocus = false;
-		// }
+		var videoOnfocus = false;
+		document.onclick = function(event) {
+			var e = event.target;
+			console.log(e);
+			if(e === video) videoOnfocus = true;
+			else videoOnfocus = false;
+		}
 		// 如果视频获取了焦点则按下空格键可以暂停
 		document.onkeyup = function(event) {	
 			if(event.keyCode === 32 && videoOnfocus) {
@@ -359,6 +387,42 @@
 			video.volume = ratio;
 		}
 
+		// 弹幕
+		var danmaku = document.querySelector('.danmaku');
+		var danmakuText = danmaku.querySelector('input');
+		var sendBtn = danmaku.querySelector('button');
+
+		sendBtn.onclick = function () {
+			var time = video.currentTime;
+			$.ajax({
+				url: 'danmakuHandler.php',
+				// 默认是get可以不写
+				// type: 'get',
+				data: {'msg':danmakuText.value, 'time':time},
+				success: function(data) {
+					var newComm = document.createElement('div');
+					newComm.innerHTML = data;
+					newComm.classList.add('commTxt');
+					document.querySelector('.comments').appendChild(newComm);
+				}
+				});
+		}
+
+		// 在页面加载完后将数据库中的评论放入评论区
+		$.ajax({
+				url: 'commentsHandler.php',
+				type: 'get',
+				success: function(data) {
+					for (var i = 0; i < data.length; i++) {
+						var newComm = document.createElement('div');
+						newComm.innerHTML = data[i].id + '|' + data[i].sendTime + '|' + data[i].comment;
+						newComm.classList.add('commTxt');
+						document.querySelector('.comments').appendChild(newComm);
+					}
+					
+					// console.log(data);
+				}
+				});
 
 	</script>
 </body>

@@ -1,5 +1,6 @@
 <?php 
-	header("Content-Type:application/json;charset=UTF-8");
+	// 在html中用$.ajax(dataType: 'json')规定了返回类型，这里可以不写header了
+	// header("Content-Type:application/json;charset=UTF-8");
 
 	try{
 	    $dbconnect = new PDO('mysql:host=localhost;dbname=danmaku','sp1','superpower1');

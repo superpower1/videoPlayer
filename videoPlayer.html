@@ -411,7 +411,7 @@
 		// 在页面加载完后将数据库中的评论放入评论区
 		$.ajax({
 				url: 'commentsHandler.php',
-				type: 'get',
+				type: 'post',
 				success: function(data) {
 					for (var i = 0; i < data.length; i++) {
 						var newComm = document.createElement('div');
@@ -421,7 +421,8 @@
 					}
 					
 					// console.log(data);
-				}
+				},
+				dataType: 'json'
 				});
 
 	</script>
